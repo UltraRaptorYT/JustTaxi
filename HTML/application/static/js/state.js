@@ -72,7 +72,7 @@ navigator.geolocation.watchPosition(function (position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
   var heading = position.coords.heading;
-
+  console.log(position);
   // Update the map's view to center on the user's location
   map.setCenter([lng, lat]);
 
@@ -90,6 +90,7 @@ navigator.geolocation.watchPosition(function (position) {
     .setLngLat([lng, lat])
     .addTo(map);
   marker.setRotation(heading);
+  alert(heading);
   map.setBearing(heading);
 });
 
