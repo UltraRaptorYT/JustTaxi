@@ -8,89 +8,49 @@ document.querySelector(
 }))`;
 
 var tripInfo = [
-  "acceleration_x_mean",
-  "acceleration_x_max",
-  "acceleration_x_min",
-  "acceleration_x_std",
-  "acceleration_x_25%",
-  "acceleration_x_75%",
-  "acceleration_y_mean",
-  "acceleration_y_max",
-  "acceleration_y_min",
-  "acceleration_y_std",
-  "acceleration_y_25%",
-  "acceleration_y_75%",
-  "acceleration_z_mean",
-  "acceleration_z_max",
-  "acceleration_z_min",
-  "acceleration_z_std",
-  "acceleration_z_25%",
-  "acceleration_z_75%",
-  "gyro_x_mean",
-  "gyro_x_max",
-  "gyro_x_min",
-  "gyro_x_std",
-  "gyro_x_25%",
-  "gyro_x_75%",
-  "gyro_y_mean",
-  "gyro_y_max",
-  "gyro_y_min",
-  "gyro_y_std",
-  "gyro_y_25%",
-  "gyro_y_75%",
-  "gyro_z_mean",
-  "gyro_z_max",
-  "gyro_z_min",
-  "gyro_z_std",
-  "gyro_z_25%",
-  "gyro_z_75%",
-  "second_mean",
-  "second_max",
-  "second_min",
-  "second_std",
-  "second_25%",
-  "second_75%",
-  "speed (km/h)_mean",
-  "speed (km/h)_max",
-  "speed (km/h)_min",
-  "speed (km/h)_std",
-  "speed (km/h)_25%",
-  "speed (km/h)_75%",
-  "yaw_mean",
-  "yaw_max",
-  "yaw_min",
-  "yaw_std",
-  "yaw_25%",
-  "yaw_75%",
-  "pitch_mean",
-  "pitch_max",
-  "pitch_min",
-  "pitch_std",
-  "pitch_25%",
-  "pitch_75%",
-  "roll_mean",
-  "roll_max",
-  "roll_min",
-  "roll_std",
-  "roll_25%",
-  "roll_75%",
-  "turning_force_mean",
-  "turning_force_max",
-  "turning_force_min",
-  "turning_force_std",
-  "turning_force_25%",
-  "turning_force_75%",
-  "acceleration_mean",
-  "acceleration_max",
-  "acceleration_min",
-  "acceleration_std",
-  "acceleration_25%",
-  "acceleration_75%",
+  "acceleration_x",
+  "acceleration_y",
+  "acceleration_z",
+  "gyro_x",
+  "gyro_y",
+  "gyro_z",
+  "second",
+  "speed (km/h)",
+  "yaw",
+  "pitch",
+  "roll",
+  "turning_force",
+  "acceleration",
 ];
-
+var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
+<thead>
+  <tr>
+    <th class="border border-slate-600">&nbsp;</th>
+    <th class="border border-slate-600">Min</th>
+    <th class="border border-slate-600">25%</th>
+    <th class="border border-slate-600">Medium</th>
+    <th class="border border-slate-600">75%</th>
+    <th class="border border-slate-600">Max</th>
+    <th class="border border-slate-600">Mean</th>
+    <th class="border border-slate-600">Std</th>
+  </tr>
+</thead>
+<tbody>`;
 for (i of tripInfo) {
-  document.querySelector("#tripInfo").innerHTML += `<p>${i}:<br/>0</p>`;
+  startString += `<tr>
+    <th class="border border-slate-600">${i}</th>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600">0</td>
+  </tr>`;
 }
+startString += "</tbody></table>";
+
+document.getElementById("tripInfo").innerHTML = startString;
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoidWx0cmFyYXB0b3IiLCJhIjoiY2t0cGo5aThxMGFxMzJybXBiNmZ3bWY4eSJ9.q24IUWxYYm6DhTDn5pY2Rg";
@@ -104,6 +64,7 @@ map.on("load", () => {
   map["scrollZoom"].disable();
   map["dragPan"].disable();
   map["dragRotate"].disable();
+  map["touchZoomRotate"].disable();
   map["doubleClickZoom"].disable();
   map["boxZoom"].disable();
 });
@@ -129,6 +90,7 @@ navigator.geolocation.watchPosition(function (position) {
     .setLngLat([lng, lat])
     .addTo(map);
   marker.setRotation(heading);
+  map.setBearing(heading);
 });
 
 var measureArr = document.querySelectorAll(".measure");
