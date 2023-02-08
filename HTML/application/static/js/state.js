@@ -1,11 +1,5 @@
-// let safe = true
-let safe = false;
-
-document.querySelector(
-  "#container"
-).style.backgroundImage = `radial-gradient(circle at center, transparent 70%, var(${
-  safe ? "--safe" : "--unsafe"
-}))`;
+// var safe = true
+var safe = false;
 
 var tripInfo = [
   "acceleration_x",
@@ -68,29 +62,31 @@ map.on("load", () => {
   map["doubleClickZoom"].disable();
   map["boxZoom"].disable();
 });
+
 navigator.geolocation.watchPosition(function (position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
-  var heading = position.coords.heading;
-  console.log(position);
+  var heading = position.coords.heading;  
   // Update the map's view to center on the user's location
   map.setCenter([lng, lat]);
 
   // Display the user's location and direction on the map
   const player = document.createElement("div");
-  player.style.backgroundImage = `url(https://cdn.discordapp.com/attachments/995303058131128371/995417061041901568/Yellow_Corn_2.png)`;
+  player.style.backgroundImage = `url(https://media.discordapp.net/attachments/910885868733087747/1068527441720647840/image-removebg-preview.png)`;
   player.id = `playerChar`;
   player.style.minWidth = `10px`;
   player.style.maxWidth = `50px`;
   player.style.width = `10vw`;
-  player.style.aspectRatio = `3/4`;
+  player.style.aspectRatio = `1`;
   player.style.backgroundSize = `100%`;
   player.style.zIndex = `99`;
+  if (document.querySelectorAll("#playerChar").length >= 1) {
+    document.querySelectorAll("#playerChar")[0].remove();
+  }  
   var marker = new mapboxgl.Marker(player, { anchor: "bottom" })
     .setLngLat([lng, lat])
     .addTo(map);
   marker.setRotation(heading);
-  alert(heading);
   map.setBearing(heading);
 });
 
@@ -101,7 +97,6 @@ for (var ele of measureArr) {
     ele.clientHeight +
     parseFloat(getComputedStyle(ele).marginTop) +
     parseFloat(getComputedStyle(ele).marginBottom);
-  console.log(ele.clientHeight);
 }
 var elementHeight = document.getElementById("container").clientHeight;
 
@@ -113,3 +108,35 @@ elementHeight -=
 document
   .querySelector("#map-container")
   .classList.add(`max-h-[${elementHeight - size}px]`);
+
+document.getElementById("tripInfo").addEventListener("click", () => {
+  console.log("hi");
+  safe = !safe;
+
+  document.querySelector(
+    "#container"
+  ).style.backgroundImage = `radial-gradient(circle at center, transparent 70%, var(${
+    safe ? "--safe" : "--unsafe"
+  }))`;
+});
+
+function tilt([x, y]) {
+  console.log(x)
+  console.log(y);
+}
+
+if (window.DeviceMotionEvent) {
+  window.addEventListener("devicemotion", motion, false);
+} else {
+  console.log("DeviceMotionEvent is not supported");
+}
+function motion(event) {
+  alert(
+    "Accelerometer: " +
+      event.accelerationIncludingGravity.x +
+      ", " +
+      event.accelerationIncludingGravity.y +
+      ", " +
+      event.accelerationIncludingGravity.z
+  );
+}
