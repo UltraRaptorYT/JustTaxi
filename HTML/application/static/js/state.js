@@ -120,18 +120,13 @@ document.getElementById("tripInfo").addEventListener("click", () => {
   }))`;
 });
 
-function tilt([x, y]) {
-  console.log(x)
-  console.log(y);
-}
-
 if (window.DeviceMotionEvent) {
   window.addEventListener("devicemotion", motion, false);
 } else {
   console.log("DeviceMotionEvent is not supported");
 }
 function motion(event) {
-  alert(
+  console.log(
     "Accelerometer: " +
       event.accelerationIncludingGravity.x +
       ", " +
