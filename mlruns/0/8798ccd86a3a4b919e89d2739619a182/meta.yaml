@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/8798ccd86a3a4b919e89d2739619a182/artifacts
+end_time: 1675846063756
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 8798ccd86a3a4b919e89d2739619a182
+run_name: Light GBM
+run_uuid: 8798ccd86a3a4b919e89d2739619a182
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675845872087
+status: 3
+tags: []
+user_id: Soh Hong Yu

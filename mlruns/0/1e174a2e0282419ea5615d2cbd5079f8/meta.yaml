@@ -1,5 +1,5 @@
 artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/1e174a2e0282419ea5615d2cbd5079f8/artifacts
-end_time: null
+end_time: 1675845872061
 entry_point_name: ''
 experiment_id: '0'
 lifecycle_stage: active
@@ -10,6 +10,6 @@ source_name: ''
 source_type: 4
 source_version: ''
 start_time: 1675845437443
-status: 1
+status: 3
 tags: []
 user_id: Soh Hong Yu

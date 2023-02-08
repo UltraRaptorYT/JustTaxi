@@ -218,7 +218,7 @@ const quantile = (arr, q) => {
 };
 
 setInterval(() => {
-  data.second.push(data.second.splice(-1) + 1);
+  data.second.push(parseInt(data.second.splice(-1)) + 1);
   for (i of tripInfo) {
     document.getElementById(i).querySelector("[data-value='min']").textContent =
       isNaN(Math.min(...data[i])) ? 0 : Math.min(...data[i]);
