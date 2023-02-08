@@ -1,6 +1,24 @@
 // var safe = true
 var safe = false;
 
+var data = {
+  acceleration_x: [],
+  acceleration_y: [],
+  acceleration_z: [],
+  gyro_x: [],
+  gyro_y: [],
+  gyro_z: [],
+  second: [],
+  "speed (km/h)": [],
+  yaw: [],
+  pitch: [],
+  roll: [],
+  turning_force: [],
+  acceleration: [],
+};
+
+var startTime = new Date();
+
 var tripInfo = [
   "acceleration_x",
   "acceleration_y",
@@ -16,6 +34,7 @@ var tripInfo = [
   "turning_force",
   "acceleration",
 ];
+
 var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
 <thead>
   <tr>
@@ -66,7 +85,10 @@ map.on("load", () => {
 navigator.geolocation.watchPosition(function (position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
-  var heading = position.coords.heading;  
+  var heading = position.coords.heading;
+  console.log(position);
+  var speed = position.coords.speed; // Metre per Second
+  data["speed (km/h)"].push(speed * 3.6);
   // Update the map's view to center on the user's location
   map.setCenter([lng, lat]);
 
@@ -82,7 +104,7 @@ navigator.geolocation.watchPosition(function (position) {
   player.style.zIndex = `99`;
   if (document.querySelectorAll("#playerChar").length >= 1) {
     document.querySelectorAll("#playerChar")[0].remove();
-  }  
+  }
   var marker = new mapboxgl.Marker(player, { anchor: "bottom" })
     .setLngLat([lng, lat])
     .addTo(map);
@@ -110,9 +132,7 @@ document
   .classList.add(`max-h-[${elementHeight - size}px]`);
 
 document.getElementById("tripInfo").addEventListener("click", () => {
-  console.log("hi");
   safe = !safe;
-
   document.querySelector(
     "#container"
   ).style.backgroundImage = `radial-gradient(circle at center, transparent 70%, var(${
@@ -126,12 +146,53 @@ if (window.DeviceMotionEvent) {
   console.log("DeviceMotionEvent is not supported");
 }
 function motion(event) {
-  console.log(
-    "Accelerometer: " +
-      event.accelerationIncludingGravity.x +
-      ", " +
-      event.accelerationIncludingGravity.y +
-      ", " +
-      event.accelerationIncludingGravity.z
-  );
+  data.acceleration_x.push(event.accelerationIncludingGravity.x);
+  data.acceleration_y.push(event.accelerationIncludingGravity.y);
+  data.acceleration_z.push(event.accelerationIncludingGravity.z);
+  yaw =
+    180 *
+    Math.atan(
+      event.accelerationIncludingGravity.z /
+        Math.sqrt(
+          Math.pow(event.accelerationIncludingGravity.x, 2) +
+            Math.pow(event.accelerationIncludingGravity.z, 2)
+        )
+    );
+  pitch =
+    180 *
+    Math.atan(
+      event.accelerationIncludingGravity.z /
+        Math.sqrt(
+          Math.pow(event.accelerationIncludingGravity.x, 2) +
+            Math.pow(event.accelerationIncludingGravity.z, 2)
+        )
+    );
+  roll =
+    180 *
+    np.arctan(
+      event.accelerationIncludingGravity.y /
+        (event.accelerationIncludingGravity.x ** 2 +
+          event.accelerationIncludingGravity.z ** 2) **
+          (1 / 2)
+    );
+
+  data.yaw.push(yaw);
+  data.pitch.push(pitch);
+  data.roll.push(roll);
+  data.turning_force.push(yaw * pitch * roll)
 }
+
+let gyroscope = new Gyroscope({ frequency: 60 });
+
+gyroscope.addEventListener("reading", (e) => {
+  data.gyro_x.push(gyroscope.x);
+  data.gyro_y.push(gyroscope.y);
+  data.gyro_z.push(gyroscope.z);
+  console.log(data);
+});
+gyroscope.start();
+
+setInterval(() => {
+  data.second.push(Date.now() - startTime);
+  console.log(data);
+}, 1000);
