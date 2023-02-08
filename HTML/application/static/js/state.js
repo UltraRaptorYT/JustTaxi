@@ -217,25 +217,30 @@ const quantile = (arr, q) => {
   }
 };
 
-
-
 setInterval(() => {
   data.second.push((Date.now() - startTime) / 1000);
   for (i of tripInfo) {
     document.getElementById(i).querySelector("[data-value='min']").textContent =
-      Math.min(data[i]);
+      isNaN(Math.min(...data[i])) ? 0 : Math.min(...data[i]);
     document.getElementById(i).querySelector("[data-value='25']").textContent =
-      quantile(data[i], 0.25);
-      document
-        .getElementById(i)
-        .querySelector("[data-value='medium']").textContent = "pink";
-      document.getElementById(i).querySelector("[data-value='75']").textContent =
-        "pink";
+      isNaN(quantile(data[i], 0.25)) ? 0 : quantile(data[i], 0.25);
+    document
+      .getElementById(i)
+      .querySelector("[data-value='medium']").textContent = isNaN(
+      quantile(data[i], 0.5)
+    )
+      ? 0
+      : quantile(data[i], 0.5);
+    document.getElementById(i).querySelector("[data-value='75']").textContent =
+      isNaN(quantile(data[i], 0.75)) ? 0 : quantile(data[i], 0.75);
     document.getElementById(i).querySelector("[data-value='max']").textContent =
-      Math.max(data[i]);
-    document.getElementById(i).querySelector("[data-value='mean']").textContent =
-      "pink";
+      isNaN(Math.max(...data[i])) ? 0 : Math.max(...data[i]);
+    document
+      .getElementById(i)
+      .querySelector("[data-value='mean']").textContent = isNaN(mean(data[i]))
+      ? 0
+      : mean(data[i]);
     document.getElementById(i).querySelector("[data-value='std']").textContent =
-      "pink";
+      isNaN(std(data[i])) ? 0 : std(data[i]);
   }
 }, 1000);
