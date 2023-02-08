@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/7e046031bc504c9db804281b84266915/artifacts
+end_time: 1675834374111
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 7e046031bc504c9db804281b84266915
+run_name: Logistic Regression
+run_uuid: 7e046031bc504c9db804281b84266915
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675834272788
+status: 3
+tags: []
+user_id: Soh Hong Yu

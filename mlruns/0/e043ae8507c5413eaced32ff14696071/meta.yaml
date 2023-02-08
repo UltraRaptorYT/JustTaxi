@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/e043ae8507c5413eaced32ff14696071/artifacts
+end_time: 1675834106209
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e043ae8507c5413eaced32ff14696071
+run_name: Decision Tree Classifier
+run_uuid: e043ae8507c5413eaced32ff14696071
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675834016157
+status: 3
+tags: []
+user_id: Soh Hong Yu

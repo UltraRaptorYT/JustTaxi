@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/61a9c4b8ca4a4bf9bd0c2e183deb96ad/artifacts
+end_time: 1675844781338
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 61a9c4b8ca4a4bf9bd0c2e183deb96ad
+run_name: Gausian Naive Bayes
+run_uuid: 61a9c4b8ca4a4bf9bd0c2e183deb96ad
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675844660757
+status: 3
+tags: []
+user_id: Soh Hong Yu

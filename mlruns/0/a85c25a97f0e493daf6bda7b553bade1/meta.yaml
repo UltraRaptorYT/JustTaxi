@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/a85c25a97f0e493daf6bda7b553bade1/artifacts
+end_time: 1675841128377
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a85c25a97f0e493daf6bda7b553bade1
+run_name: 3 Dense Layers
+run_uuid: a85c25a97f0e493daf6bda7b553bade1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675841127038
+status: 4
+tags: []
+user_id: Soh Hong Yu

@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/b61e195659bb4db1979048182a6a3357/artifacts
+end_time: 1675835317293
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b61e195659bb4db1979048182a6a3357
+run_name: Gradient Boosting Classifier
+run_uuid: b61e195659bb4db1979048182a6a3357
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675834985181
+status: 3
+tags: []
+user_id: Soh Hong Yu

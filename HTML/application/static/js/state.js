@@ -50,15 +50,15 @@ var startString = `<table class="table-auto border-collapse border border-slate-
 </thead>
 <tbody>`;
 for (i of tripInfo) {
-  startString += `<tr>
+  startString += `<tr id="${i}">
     <th class="border border-slate-600">${i}</th>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
-    <td class="border border-slate-600">0</td>
+    <td class="border border-slate-600" data-value="min">0</td>
+    <td class="border border-slate-600" data-value="25">0</td>
+    <td class="border border-slate-600" data-value="medium">0</td>
+    <td class="border border-slate-600" data-value="75">0</td>
+    <td class="border border-slate-600" data-value="max">0</td>
+    <td class="border border-slate-600" data-value="mean">0</td>
+    <td class="border border-slate-600" data-value="std">0</td>
   </tr>`;
 }
 startString += "</tbody></table>";
@@ -169,17 +169,18 @@ function motion(event) {
     );
   roll =
     180 *
-    np.arctan(
+    Math.atan(
       event.accelerationIncludingGravity.y /
-        (event.accelerationIncludingGravity.x ** 2 +
-          event.accelerationIncludingGravity.z ** 2) **
-          (1 / 2)
+        Math.sqrt(
+          Math.pow(event.accelerationIncludingGravity.x, 2) +
+            Math.pow(event.accelerationIncludingGravity.z, 2)
+        )
     );
 
   data.yaw.push(yaw);
   data.pitch.push(pitch);
   data.roll.push(roll);
-  data.turning_force.push(yaw * pitch * roll)
+  data.turning_force.push(yaw * pitch * roll);
 }
 
 let gyroscope = new Gyroscope({ frequency: 60 });
@@ -192,7 +193,49 @@ gyroscope.addEventListener("reading", (e) => {
 });
 gyroscope.start();
 
+const asc = (arr) => arr.sort((a, b) => a - b);
+
+const sum = (arr) => arr.reduce((a, b) => a + b, 0);
+
+const mean = (arr) => sum(arr) / arr.length;
+
+const std = (arr) => {
+  const mu = mean(arr);
+  const diffArr = arr.map((a) => (a - mu) ** 2);
+  return Math.sqrt(sum(diffArr) / (arr.length - 1));
+};
+
+const quantile = (arr, q) => {
+  const sorted = asc(arr);
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  if (sorted[base + 1] !== undefined) {
+    return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  } else {
+    return sorted[base];
+  }
+};
+
+
+
 setInterval(() => {
-  data.second.push(Date.now() - startTime);
-  console.log(data);
+  data.second.push((Date.now() - startTime) / 1000);
+  for (i of tripInfo) {
+    document.getElementById(i).querySelector("[data-value='min']").textContent =
+      Math.min(data[i]);
+    document.getElementById(i).querySelector("[data-value='25']").textContent =
+      quantile(data[i], 0.25);
+      document
+        .getElementById(i)
+        .querySelector("[data-value='medium']").textContent = "pink";
+      document.getElementById(i).querySelector("[data-value='75']").textContent =
+        "pink";
+    document.getElementById(i).querySelector("[data-value='max']").textContent =
+      Math.max(data[i]);
+    document.getElementById(i).querySelector("[data-value='mean']").textContent =
+      "pink";
+    document.getElementById(i).querySelector("[data-value='std']").textContent =
+      "pink";
+  }
 }, 1000);

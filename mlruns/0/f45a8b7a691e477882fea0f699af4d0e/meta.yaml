@@ -1,0 +1,15 @@
+artifact_uri: file:///c:/Users/Soh%20Hong%20Yu/OneDrive/Desktop/Coding/PAI/CA2/mlruns/0/f45a8b7a691e477882fea0f699af4d0e/artifacts
+end_time: 1675835542913
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f45a8b7a691e477882fea0f699af4d0e
+run_name: Extreme Gradient Boosting
+run_uuid: f45a8b7a691e477882fea0f699af4d0e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1675835317330
+status: 3
+tags: []
+user_id: Soh Hong Yu

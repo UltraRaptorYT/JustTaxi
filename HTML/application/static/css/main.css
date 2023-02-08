@@ -160,5 +160,6 @@ body,
 }
 
 #container {
-  transition: all 5;
+  transition: all 5s linear;
+  background-image: radial-gradient(circle at center, transparent 70%, #ffde17)
 }
