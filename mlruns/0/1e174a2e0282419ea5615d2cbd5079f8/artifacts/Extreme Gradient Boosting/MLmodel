@@ -1,0 +1,19 @@
+artifact_path: Extreme Gradient Boosting
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.8.8
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.0.2
+mlflow_version: 2.1.1
+model_uuid: ac6be0f30c2449b4bd8b733dd1c63020
+run_id: 1e174a2e0282419ea5615d2cbd5079f8
+utc_time_created: '2023-02-08 08:38:52.754568'

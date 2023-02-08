@@ -8,7 +8,7 @@ var data = {
   gyro_x: [],
   gyro_y: [],
   gyro_z: [],
-  second: [],
+  second: [0],
   "speed (km/h)": [],
   yaw: [],
   pitch: [],
@@ -218,7 +218,7 @@ const quantile = (arr, q) => {
 };
 
 setInterval(() => {
-  data.second.push((Date.now() - startTime) / 1000);
+  data.second.push(data.second.splice(-1) + 1);
   for (i of tripInfo) {
     document.getElementById(i).querySelector("[data-value='min']").textContent =
       isNaN(Math.min(...data[i])) ? 0 : Math.min(...data[i]);
