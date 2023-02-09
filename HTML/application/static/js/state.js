@@ -15,6 +15,8 @@ var data = {
   roll: [],
   turning_force: [],
   acceleration: [],
+  accuracy: [],
+  bearing: [],
 };
 
 var startTime = new Date();
@@ -33,6 +35,8 @@ var tripInfo = [
   "roll",
   "turning_force",
   "acceleration",
+  "accuracy",
+  "bearing",
 ];
 
 var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
@@ -89,6 +93,9 @@ navigator.geolocation.watchPosition(function (position) {
   console.log(position);
   var speed = position.coords.speed; // Metre per Second
   data["speed (km/h)"].push(speed * 3.6);
+  var accuracy = position.coords.accuracy
+  data['accuracy'].push(accuracy)
+  data["bearing"].push(heading);
   // Update the map's view to center on the user's location
   map.setCenter([lng, lat]);
 
