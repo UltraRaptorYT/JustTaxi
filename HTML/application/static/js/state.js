@@ -261,23 +261,25 @@ mapContainer.addEventListener("click", () => {
   if (mapContainer.dataset.good == "None") {
     console.log("Ho");
   } else {
-    pointer.classList.add(
-      mapContainer.dataset.good == "True" ? "safe" : "unsafe"
-    );
-    document
-      .querySelector("#container")
-      .classList.add(mapContainer.dataset.good == "True" ? "safe" : "unsafe");
-        document
-          .querySelector("#container")
-          .classList.remove(
-            mapContainer.dataset.good == "True" ? "unsafe" : "safe"
-          );
-    document.getElementById("container");
-    document.getElementById("state").textContent =
-      mapContainer.dataset.good == "True" ? "Safe" : "Unsafe";
     setTimeout(() => {
-      pointer.classList.add("osc");
-    }, 3500);
+      pointer.classList.add(
+        mapContainer.dataset.good == "True" ? "safe" : "unsafe"
+      );
+      document
+        .querySelector("#container")
+        .classList.add(mapContainer.dataset.good == "True" ? "safe" : "unsafe");
+      document
+        .querySelector("#container")
+        .classList.remove(
+          mapContainer.dataset.good == "True" ? "unsafe" : "safe"
+        );
+      document.getElementById("container");
+      document.getElementById("state").textContent =
+        mapContainer.dataset.good == "True" ? "Safe" : "Unsafe";
+      setTimeout(() => {
+        pointer.classList.add("osc");
+      }, 3500);
+    }, 2000);
   }
 });
 
@@ -285,7 +287,7 @@ setInterval(() => {
   var st = window.getComputedStyle(pointer, null);
   var rotate = st.getPropertyValue("rotate");
   console.log(rotate);
-  
+
   document.getElementById("proba").textContent =
     rotate == "none" ? 0 : parseFloat(rotate.split("deg")[0]).toFixed(1);
 }, 500);
