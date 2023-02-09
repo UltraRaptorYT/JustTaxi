@@ -2,6 +2,8 @@
 var safe = false;
 
 var data = {
+  accuracy: [],
+  bearing: [],
   acceleration_x: [],
   acceleration_y: [],
   acceleration_z: [],
@@ -15,13 +17,13 @@ var data = {
   roll: [],
   turning_force: [],
   acceleration: [],
-  accuracy: [],
-  bearing: [],
 };
 
 var startTime = new Date();
 
 var tripInfo = [
+  "accuracy",
+  "bearing",
   "acceleration_x",
   "acceleration_y",
   "acceleration_z",
@@ -35,8 +37,6 @@ var tripInfo = [
   "roll",
   "turning_force",
   "acceleration",
-  "accuracy",
-  "bearing",
 ];
 
 var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
@@ -93,8 +93,8 @@ navigator.geolocation.watchPosition(function (position) {
   console.log(position);
   var speed = position.coords.speed; // Metre per Second
   data["speed (km/h)"].push(speed * 3.6);
-  var accuracy = position.coords.accuracy
-  data['accuracy'].push(accuracy)
+  var accuracy = position.coords.accuracy;
+  data["accuracy"].push(accuracy);
   data["bearing"].push(heading);
   // Update the map's view to center on the user's location
   map.setCenter([lng, lat]);
@@ -225,29 +225,31 @@ const quantile = (arr, q) => {
 };
 
 setInterval(() => {
-  data.second.push(parseInt(data.second.splice(-1)) + 1);
+  data.second.push(parseInt([...data.second].splice(-1)) + 1);
   for (i of tripInfo) {
     document.getElementById(i).querySelector("[data-value='min']").textContent =
-      isNaN(Math.min.apply(Math, data[i])) ? 0 : Math.min.apply(Math, data[i]);
+      isNaN(Math.min.apply(Math, data[i])) ? 0 : Math.min.apply(Math, data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='25']").textContent =
-      isNaN(quantile(data[i], 0.25)) ? 0 : quantile(data[i], 0.25);
+      isNaN(quantile(data[i], 0.25)) ? 0 : quantile(data[i], 0.25).toFixed(3);
     document
       .getElementById(i)
       .querySelector("[data-value='medium']").textContent = isNaN(
       quantile(data[i], 0.5)
     )
       ? 0
-      : quantile(data[i], 0.5);
+      : quantile(data[i], 0.5).toFixed(3);
     document.getElementById(i).querySelector("[data-value='75']").textContent =
-      isNaN(quantile(data[i], 0.75)) ? 0 : quantile(data[i], 0.75);
+      isNaN(quantile(data[i], 0.75)) ? 0 : quantile(data[i], 0.75).toFixed(3);
     document.getElementById(i).querySelector("[data-value='max']").textContent =
-      isNaN(Math.max.apply(Math, data[i])) ? 0 : Math.max.apply(Math, data[i]);
+      isNaN(Math.max.apply(Math, data[i])) ? 0 : Math.max.apply(Math, data[i]).toFixed(3);
     document
       .getElementById(i)
       .querySelector("[data-value='mean']").textContent = isNaN(mean(data[i]))
       ? 0
-      : mean(data[i]);
+      : mean(data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='std']").textContent =
-      isNaN(std(data[i])) ? 0 : std(data[i]);
+      isNaN(std(data[i])) ? 0 : std(data[i]).toFixed(3);
   }
 }, 1000);
+
+document.getElementById("saveData")
