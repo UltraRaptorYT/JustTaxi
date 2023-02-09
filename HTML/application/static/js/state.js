@@ -21,7 +21,11 @@ var data = {
 
 var startTime = new Date();
 
+var agg = ["mean", "max", "min", "std", "25", "75"];
+
 var tripInfo = [
+  "accuracy",
+  "bearing",
   "acceleration_x",
   "acceleration_y",
   "acceleration_z",
@@ -35,34 +39,30 @@ var tripInfo = [
   "roll",
   "turning_force",
   "acceleration",
-  "accuracy",
-  "bearing",
 ];
 
 var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
 <thead>
   <tr>
     <th class="border border-slate-600 whitespace-nowrap">&nbsp;</th>
-    <th class="border border-slate-600 whitespace-nowrap">Min</th>
-    <th class="border border-slate-600 whitespace-nowrap">25%</th>
-    <th class="border border-slate-600 whitespace-nowrap">Medium</th>
-    <th class="border border-slate-600 whitespace-nowrap">75%</th>
-    <th class="border border-slate-600 whitespace-nowrap">Max</th>
     <th class="border border-slate-600 whitespace-nowrap">Mean</th>
+    <th class="border border-slate-600 whitespace-nowrap">Max</th>
+    <th class="border border-slate-600 whitespace-nowrap">Min</th>
     <th class="border border-slate-600 whitespace-nowrap">Std</th>
+    <th class="border border-slate-600 whitespace-nowrap">25%</th>
+    <th class="border border-slate-600 whitespace-nowrap">75%</th>
   </tr>
 </thead>
 <tbody>`;
 for (i of tripInfo) {
   startString += `<tr id="${i}">
     <th class="border border-slate-600 whitespace-nowrap">${i}</th>
-    <td class="border border-slate-600 whitespace-nowrap" data-value="min">0</td>
-    <td class="border border-slate-600 whitespace-nowrap" data-value="25">0</td>
-    <td class="border border-slate-600 whitespace-nowrap" data-value="medium">0</td>
-    <td class="border border-slate-600 whitespace-nowrap" data-value="75">0</td>
-    <td class="border border-slate-600 whitespace-nowrap" data-value="max">0</td>
     <td class="border border-slate-600 whitespace-nowrap" data-value="mean">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="max">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="min">0</td>
     <td class="border border-slate-600 whitespace-nowrap" data-value="std">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="25">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="75">0</td>
   </tr>`;
 }
 startString += "</tbody></table>";
@@ -226,36 +226,94 @@ setInterval(() => {
   data.second.push(parseInt([...data.second].splice(-1)) + 1);
   for (i of tripInfo) {
     var Q1 = quantile(data[i], 0.25);
-    var Q2 = quantile(data[i], 0.5);
     var Q3 = quantile(data[i], 0.75);
     document.getElementById(i).querySelector("[data-value='min']").textContent =
-      Q1 == null || isNaN(Math.min.apply(Math, data[i]))
+      Math.min.apply(Math, data[i]) == null ||
+      isNaN(Math.min.apply(Math, data[i]))
         ? 0
         : Math.min.apply(Math, data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='25']").textContent =
       Q1 == null || isNaN(Q1) ? 0 : Q1.toFixed(3);
-    document
-      .getElementById(i)
-      .querySelector("[data-value='medium']").textContent =
-      Q1 == null || isNaN(Q2) ? 0 : Q2.toFixed(3);
     document.getElementById(i).querySelector("[data-value='75']").textContent =
-      Q1 == null || isNaN(Q3) ? 0 : Q3.toFixed(3);
+      Q3 == null || isNaN(Q3) ? 0 : Q3.toFixed(3);
     document.getElementById(i).querySelector("[data-value='max']").textContent =
-      Q1 == null || isNaN(Math.max.apply(Math, data[i]))
+      Math.max.apply(Math, data[i]) == null ||
+      isNaN(Math.max.apply(Math, data[i]))
         ? 0
         : Math.max.apply(Math, data[i]).toFixed(3);
     document
       .getElementById(i)
       .querySelector("[data-value='mean']").textContent =
-      Q1 == null || isNaN(mean(data[i])) ? 0 : mean(data[i]).toFixed(3);
+      mean(data[i]) == null || isNaN(mean(data[i]))
+        ? 0
+        : mean(data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='std']").textContent =
-      Q1 == null || isNaN(std(data[i])) ? 0 : std(data[i]).toFixed(3);
+      std(data[i]) == null || isNaN(std(data[i])) ? 0 : std(data[i]).toFixed(3);
   }
 }, 1000);
 
-// document.getElementById("saveData")
+document.getElementById("saveData").addEventListener("click", () => {
+  tableToCSV();
+});
+
 var pointer = document.getElementById("pointer");
 var mapContainer = document.getElementById("map-container");
+
+const bookingIDLength = 10;
+const letters = "0123456789";
+function uniqueId() {
+  var text = "";
+  for (var i = 0; i < bookingIDLength; i++) {
+    text += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  return text;
+}
+
+function tableToCSV() {
+  // Variable to store the final csv data
+  var csv_data = [];
+  var columnName = ["bookingID"];
+  var dataRow = [uniqueId()];
+  for (i of tripInfo) {
+    for (var value of agg) {
+      columnName.push(`${i}_${value}`);
+      dataRow.push(
+        parseFloat(document.getElementById(i).querySelector(`[data-value='${value}']`)
+          .textContent)
+      );
+    }
+  }
+  csv_data.push(columnName.join(","));
+  csv_data.push(dataRow.join(","));
+
+  csv_data = csv_data.join("\n");
+
+  console.log(csv_data);
+  downloadCSVFile(csv_data);
+}
+
+function downloadCSVFile(csv_data) {
+  // Create CSV file object and feed our
+  // csv_data into it
+  CSVFile = new Blob([csv_data], { type: "text/csv" });
+
+  // Create to temporary link to initiate
+  // download process
+  var temp_link = document.createElement("a");
+
+  // Download csv file
+  temp_link.download = "driving.csv";
+  var url = window.URL.createObjectURL(CSVFile);
+  temp_link.href = url;
+
+  // This link should not be displayed
+  temp_link.style.display = "none";
+  document.body.appendChild(temp_link);
+
+  // Automatically click the link to trigger download
+  temp_link.click();
+  document.body.removeChild(temp_link);
+}
 
 mapContainer.addEventListener("click", () => {
   if (mapContainer.dataset.good == "None") {
@@ -283,11 +341,10 @@ mapContainer.addEventListener("click", () => {
   }
 });
 
-setInterval(() => {
-  var st = window.getComputedStyle(pointer, null);
-  var rotate = st.getPropertyValue("rotate");
-  console.log(rotate);
-
-  document.getElementById("proba").textContent =
-    rotate == "none" ? 0 : parseFloat(rotate.split("deg")[0]).toFixed(1);
-}, 500);
+// setInterval(() => {
+//   var st = window.getComputedStyle(pointer, null);
+//   var rotate = st.getPropertyValue("rotate");
+//   console.log(rotate);
+//   document.getElementById("proba").textContent =
+//     rotate == "none" ? 0 : parseFloat(rotate.split("deg")[0]).toFixed(1);
+// }, 500);
