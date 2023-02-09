@@ -228,7 +228,7 @@ setInterval(() => {
   data.second.push(parseInt(data.second.splice(-1)) + 1);
   for (i of tripInfo) {
     document.getElementById(i).querySelector("[data-value='min']").textContent =
-      isNaN(Math.min(...data[i])) ? 0 : Math.min(...data[i]);
+      isNaN(Math.min.apply(Math, data[i])) ? 0 : Math.min.apply(Math, data[i]);
     document.getElementById(i).querySelector("[data-value='25']").textContent =
       isNaN(quantile(data[i], 0.25)) ? 0 : quantile(data[i], 0.25);
     document
@@ -241,7 +241,7 @@ setInterval(() => {
     document.getElementById(i).querySelector("[data-value='75']").textContent =
       isNaN(quantile(data[i], 0.75)) ? 0 : quantile(data[i], 0.75);
     document.getElementById(i).querySelector("[data-value='max']").textContent =
-      isNaN(Math.max(...data[i])) ? 0 : Math.max(...data[i]);
+      isNaN(Math.max.apply(Math, data[i])) ? 0 : Math.max.apply(Math, data[i]);
     document
       .getElementById(i)
       .querySelector("[data-value='mean']").textContent = isNaN(mean(data[i]))
