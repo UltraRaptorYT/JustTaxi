@@ -12,7 +12,15 @@ main = Blueprint('main', __name__)
 @main.route('/index')
 @main.route('/home')
 def index():
-    return render_template("index.html")
+    return render_template("index.html", safe=None)
+
+@main.route("/safe")
+def safe():
+    return render_template("index.html", safe=True)
+
+@main.route("/unsafe")
+def unsafe():
+    return render_template("index.html", safe=False)
 
 # @main.route('/history')
 # def history():

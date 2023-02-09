@@ -22,8 +22,6 @@ var data = {
 var startTime = new Date();
 
 var tripInfo = [
-  "accuracy",
-  "bearing",
   "acceleration_x",
   "acceleration_y",
   "acceleration_z",
@@ -37,32 +35,34 @@ var tripInfo = [
   "roll",
   "turning_force",
   "acceleration",
+  "accuracy",
+  "bearing",
 ];
 
 var startString = `<table class="table-auto border-collapse border border-slate-500 w-full" id="tripTable">
 <thead>
   <tr>
-    <th class="border border-slate-600">&nbsp;</th>
-    <th class="border border-slate-600">Min</th>
-    <th class="border border-slate-600">25%</th>
-    <th class="border border-slate-600">Medium</th>
-    <th class="border border-slate-600">75%</th>
-    <th class="border border-slate-600">Max</th>
-    <th class="border border-slate-600">Mean</th>
-    <th class="border border-slate-600">Std</th>
+    <th class="border border-slate-600 whitespace-nowrap">&nbsp;</th>
+    <th class="border border-slate-600 whitespace-nowrap">Min</th>
+    <th class="border border-slate-600 whitespace-nowrap">25%</th>
+    <th class="border border-slate-600 whitespace-nowrap">Medium</th>
+    <th class="border border-slate-600 whitespace-nowrap">75%</th>
+    <th class="border border-slate-600 whitespace-nowrap">Max</th>
+    <th class="border border-slate-600 whitespace-nowrap">Mean</th>
+    <th class="border border-slate-600 whitespace-nowrap">Std</th>
   </tr>
 </thead>
 <tbody>`;
 for (i of tripInfo) {
   startString += `<tr id="${i}">
-    <th class="border border-slate-600">${i}</th>
-    <td class="border border-slate-600" data-value="min">0</td>
-    <td class="border border-slate-600" data-value="25">0</td>
-    <td class="border border-slate-600" data-value="medium">0</td>
-    <td class="border border-slate-600" data-value="75">0</td>
-    <td class="border border-slate-600" data-value="max">0</td>
-    <td class="border border-slate-600" data-value="mean">0</td>
-    <td class="border border-slate-600" data-value="std">0</td>
+    <th class="border border-slate-600 whitespace-nowrap">${i}</th>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="min">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="25">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="medium">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="75">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="max">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="mean">0</td>
+    <td class="border border-slate-600 whitespace-nowrap" data-value="std">0</td>
   </tr>`;
 }
 startString += "</tbody></table>";
@@ -140,11 +140,10 @@ document
 
 document.getElementById("tripInfo").addEventListener("click", () => {
   safe = !safe;
-  document.querySelector(
-    "#container"
-  ).style.backgroundImage = `radial-gradient(circle at center, transparent 70%, var(${
-    safe ? "--safe" : "--unsafe"
-  }))`;
+  document.querySelector("#container").classList.add(safe ? "safe" : "unsafe");
+  document
+    .querySelector("#container")
+    .classList.remove(safe ? "unsafe" : "safe");
 });
 
 if (window.DeviceMotionEvent) {
@@ -196,7 +195,6 @@ gyroscope.addEventListener("reading", (e) => {
   data.gyro_x.push(gyroscope.x);
   data.gyro_y.push(gyroscope.y);
   data.gyro_z.push(gyroscope.z);
-  console.log(data);
 });
 gyroscope.start();
 
@@ -227,29 +225,67 @@ const quantile = (arr, q) => {
 setInterval(() => {
   data.second.push(parseInt([...data.second].splice(-1)) + 1);
   for (i of tripInfo) {
+    var Q1 = quantile(data[i], 0.25);
+    var Q2 = quantile(data[i], 0.5);
+    var Q3 = quantile(data[i], 0.75);
     document.getElementById(i).querySelector("[data-value='min']").textContent =
-      isNaN(Math.min.apply(Math, data[i])) ? 0 : Math.min.apply(Math, data[i]).toFixed(3);
+      Q1 == null || isNaN(Math.min.apply(Math, data[i]))
+        ? 0
+        : Math.min.apply(Math, data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='25']").textContent =
-      isNaN(quantile(data[i], 0.25)) ? 0 : quantile(data[i], 0.25).toFixed(3);
+      Q1 == null || isNaN(Q1) ? 0 : Q1.toFixed(3);
     document
       .getElementById(i)
-      .querySelector("[data-value='medium']").textContent = isNaN(
-      quantile(data[i], 0.5)
-    )
-      ? 0
-      : quantile(data[i], 0.5).toFixed(3);
+      .querySelector("[data-value='medium']").textContent =
+      Q1 == null || isNaN(Q2) ? 0 : Q2.toFixed(3);
     document.getElementById(i).querySelector("[data-value='75']").textContent =
-      isNaN(quantile(data[i], 0.75)) ? 0 : quantile(data[i], 0.75).toFixed(3);
+      Q1 == null || isNaN(Q3) ? 0 : Q3.toFixed(3);
     document.getElementById(i).querySelector("[data-value='max']").textContent =
-      isNaN(Math.max.apply(Math, data[i])) ? 0 : Math.max.apply(Math, data[i]).toFixed(3);
+      Q1 == null || isNaN(Math.max.apply(Math, data[i]))
+        ? 0
+        : Math.max.apply(Math, data[i]).toFixed(3);
     document
       .getElementById(i)
-      .querySelector("[data-value='mean']").textContent = isNaN(mean(data[i]))
-      ? 0
-      : mean(data[i]).toFixed(3);
+      .querySelector("[data-value='mean']").textContent =
+      Q1 == null || isNaN(mean(data[i])) ? 0 : mean(data[i]).toFixed(3);
     document.getElementById(i).querySelector("[data-value='std']").textContent =
-      isNaN(std(data[i])) ? 0 : std(data[i]).toFixed(3);
+      Q1 == null || isNaN(std(data[i])) ? 0 : std(data[i]).toFixed(3);
   }
 }, 1000);
 
-document.getElementById("saveData")
+// document.getElementById("saveData")
+var pointer = document.getElementById("pointer");
+var mapContainer = document.getElementById("map-container");
+
+mapContainer.addEventListener("click", () => {
+  if (mapContainer.dataset.good == "None") {
+    console.log("Ho");
+  } else {
+    pointer.classList.add(
+      mapContainer.dataset.good == "True" ? "safe" : "unsafe"
+    );
+    document
+      .querySelector("#container")
+      .classList.add(mapContainer.dataset.good == "True" ? "safe" : "unsafe");
+        document
+          .querySelector("#container")
+          .classList.remove(
+            mapContainer.dataset.good == "True" ? "unsafe" : "safe"
+          );
+    document.getElementById("container");
+    document.getElementById("state").textContent =
+      mapContainer.dataset.good == "True" ? "Safe" : "Unsafe";
+    setTimeout(() => {
+      pointer.classList.add("osc");
+    }, 3500);
+  }
+});
+
+setInterval(() => {
+  var st = window.getComputedStyle(pointer, null);
+  var rotate = st.getPropertyValue("rotate");
+  console.log(rotate);
+  
+  document.getElementById("proba").textContent =
+    rotate == "none" ? 0 : parseFloat(rotate.split("deg")[0]).toFixed(1);
+}, 500);

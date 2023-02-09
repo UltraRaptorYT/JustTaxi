@@ -109,7 +109,8 @@ body,
   top: 3px;
   clip-path: polygon(9px 10px, 11px 10px, 20px 150px, 10px 190px, 0 150px);
   transform-origin: 10px 145px;
-  animation: animate-pointer 5s linear infinite;
+  transform: translate3d(0, 0, 0);
+  /* animation: animate-pointer 5s linear infinite; */
 }
 
 .pointer::before {
@@ -126,10 +127,10 @@ body,
 #prob {
   position: absolute;
   left: 50%;
-  bottom: 20%;
+  bottom: 15%;
   transform: translateX(-50%);
-  font-weight: bold;
-  font-size: x-large;
+  line-height: 1.5rem;
+  /* font-size: x-large; */
 }
 
 @keyframes animate-pointer {
@@ -162,4 +163,94 @@ body,
 #container {
   transition: all 5s linear;
   background-image: radial-gradient(circle at center, transparent 70%, #ffde17)
+}
+
+#container.safe {
+  background-image: radial-gradient(circle at center, transparent 70%, var(--safe))
+}
+
+#container.unsafe {
+  background-image: radial-gradient(circle at center, transparent 70%, var(--unsafe))
+}
+
+.pointer.safe {
+  animation: safe 3.5s ease-in forwards;
+}
+
+.pointer.safe.osc {
+  animation: safeOsc 4.2s linear infinite;
+}
+
+.pointer.unsafe {
+  animation: unsafe 3.5s ease-in forwards;;
+}
+
+.pointer.unsafe.osc {
+  animation: unsafeOsc 4.2s linear infinite;
+}
+
+@keyframes safe {
+  0% {
+    rotate: 0deg;
+  }
+
+  100% {
+    rotate: 45deg;
+  }
+}
+
+
+@keyframes safeOsc {
+  0% {
+    rotate: 45deg;
+  }
+
+  25% {
+    rotate: 35deg;
+  }
+
+  50% {
+    rotate: 45deg;
+  }
+
+  75% {
+    rotate: 50deg;
+  }
+
+  100% {
+    rotate: 45deg;
+  }
+}
+
+@keyframes unsafe {
+  0% {
+    rotate: -0deg;
+  }
+
+  100% {
+    rotate: -45deg;
+  }
+}
+
+
+@keyframes unsafeOsc {
+  0% {
+    rotate: -45deg;
+  }
+
+  25% {
+    rotate: -35deg;
+  }
+
+  50% {
+    rotate: -45deg;
+  }
+
+  75% {
+    rotate: -50deg;
+  }
+
+  100% {
+    rotate: -45deg;
+  }
 }
