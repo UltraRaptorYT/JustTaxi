@@ -283,7 +283,7 @@ var bookingID = uniqueId();
 function tableToCSV() {
   // Variable to store the final csv data
   var csv_data = [];
-  var columnName = ["bookingID"];
+  var columnName = ["booking_id"];
   var dataRow = [bookingID];
   for (i of tripInfo) {
     for (var value of agg) {

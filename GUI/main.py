@@ -27,12 +27,17 @@ def validate_data_input(x):
         except Exception as ep:
             messagebox.showerror('error', 'Can only be integer/float')
             return False
-    messagebox.showinfo('message', msg)
 
 
 def callback():
+    if not data_input["%s" % features[0]].get():
+        messagebox.showerror('error', 'Missing value')
+        return False
     X = [data_input["%s" % features[0]].get()]
     for i in range(len(features) - 1):
+        if not data_input["%s" % features[i+1]].get():
+            messagebox.showerror('error', 'Missing value')
+            return False
         X += [data_input["%s" % features[i+1]].get()]
     X = pd.DataFrame([X], columns=features)
     y_pred = clf.predict(X)
@@ -59,10 +64,10 @@ def item_selected(event):
         record = item['values']
         for key, entry in data_input.items():
             value = tk.StringVar()
-            value.set(float(data.iloc[record[0]][key]))
+            value.set(float(data.loc[record[0]][key]))
             entry['textvariable'] = value
     callback()
-'''New'''
+
 def standard_deviation():
     def standard_deviation_(x):
         return np.std(x, ddof=0)
@@ -75,7 +80,6 @@ def percentile(n):
         return np.percentile(x, n)
     percentile_.__name__ = 'percentile_%s' % n
     return percentile_
-'''End New'''
 
 
 def UploadAction(event=None):
@@ -83,46 +87,47 @@ def UploadAction(event=None):
     if filename.endswith('.csv'):
         global data
         data = pd.read_csv(filename)
-        data = data.set_index("bookingID")
+        data = data.set_index("booking_id")
         if "acceleration_mean" not in data.columns:
+            data = data.drop(['name', 'date_of_birth', 'gender', 'car_model', 'car_make_year', 'driver_id', 'age', "rating", "speed", 'label'], axis=1)
             data = data.dropna()
             
-            TDCAG = pd.DataFrame()
+            tempDF = pd.DataFrame()
             for col in tqdm(data.columns):
-                if col != "bookingID" and col != "label":
-                    temp = data.groupby("bookingID")[col].agg(["mean", 'max', 'min', standard_deviation(), percentile(25), percentile(75)])
-                    TDCAG[col + "_mean"] = temp["mean"]
-                    TDCAG[col + "_max"] = temp["max"]
-                    TDCAG[col + "_min"] = temp["min"]
-                    TDCAG[col+ "_std"] = temp['std']
-                    TDCAG[col + "_25%"] = temp['percentile_25']
-                    TDCAG[col + "_75%"] = temp['percentile_75']
-                elif col == "label":
-                    temp = data.groupby("bookingID")[col].agg(["max"])
-                    TDCAG[col] = temp['max']
-                    
-            TDCAG.reset_index(inplace=True)
-            return TDCAG
+                temp = data.groupby("booking_id")[col].agg(["mean", 'max', 'min', standard_deviation(), percentile(25), percentile(75)])
+                tempDF[col + "_mean"] = temp["mean"]
+                tempDF[col + "_max"] = temp["max"]
+                tempDF[col + "_min"] = temp["min"]
+                tempDF[col+ "_std"] = temp['std']
+                tempDF[col + "_25%"] = temp['percentile_25']
+                tempDF[col + "_75%"] = temp['percentile_75']
 
-        
-        # need to check man
+                    
+            tempDF.reset_index(inplace=True)
+            mask = tempDF.isnull().any(axis=1) | tempDF.isin([np.inf, -np.inf]).any(axis=1)
+            tempDF = tempDF[~mask]
+            tempDF = tempDF.set_index("booking_id")
+            data = tempDF
+
         y_pred = clf.predict(data)
+        global table
+        if table != None:
+            Clear()
         scroll = Scrollbar(table_frame)
         scroll.pack(side='right', fill='y')        
-        global table
         table = ttk.Treeview(table_frame, yscrollcommand=scroll.set)
         table.bind('<<TreeviewSelect>>', item_selected)
         table.pack()
         scroll.config(command=table.yview)
-        table['columns'] = ('bookingID', 'Label')
+        table['columns'] = ('booking_id', 'Label')
         # format our column
         table.column("#0", width=0,  stretch='no')
-        table.column("bookingID", anchor='center', width=50)
-        table.column("Label", anchor='center', width=50)
+        table.column("booking_id", anchor='center', width=75)
+        table.column("Label", anchor='center', width=75)
 
         # Create Headings
         table.heading("#0", text="", anchor='center')
-        table.heading("bookingID", text="bookingID", anchor='center')
+        table.heading("booking_id", text="booking_id", anchor='center')
         table.heading("Label", text="Driving Behaviour", anchor='center')
 
         # Insert data
@@ -138,9 +143,9 @@ def UploadAction(event=None):
                          values=(data.index.values[i], label))
             bid.append(data.index.values[i])
             pred_labels.append(label)
-        data_dict = {'bookingID': bid, 'Label': pred_labels}
+        data_dict = {'booking_id': bid, 'Label': pred_labels}
         global df
-        df = pd.DataFrame(data_dict, columns=['bookingID', 'Label'])
+        df = pd.DataFrame(data_dict, columns=['booking_id', 'Label'])
         dl_btn = tk.Button(
             master=export_frame, text='Export result', command=Download)
         dl_btn.pack()
@@ -150,7 +155,6 @@ def UploadAction(event=None):
 
 def Download():
     if isinstance(df, pd.DataFrame):
-        print(df)
         now = datetime.now()
         a = now.strftime("%d-%m-%Y %H%M")
         df.to_csv(f'PredictionResult_{a}.csv', index=False)
@@ -165,6 +169,10 @@ def Clear():
         widget.destroy()
     for widget in export_frame.winfo_children():
         widget.destroy()
+    for entry in data_input.values():
+        value = tk.StringVar()
+        value.set("")
+        entry['textvariable'] = value
 
 
 # Setup window
@@ -236,7 +244,7 @@ submitBtn.pack()
 
 # Upload btn
 frame = tk.Frame(master=window)
-frame.grid(row=7, column=8, columnspan=2)
+frame.grid(row=6, column=8, columnspan=2)
 t = tk.Label(master=frame, text='Upload a csv')
 t.pack()
 uploadBtn = tk.Button(master=frame, text='Upload', command=UploadAction)
@@ -267,7 +275,7 @@ export_frame.grid(row=10, column=8, columnspan=2)
 
 # Clear btn
 frame = tk.Frame(master=window)
-frame.grid(row=8, column=8, columnspan=2, rowspan=2)
+frame.grid(row=7, column=8, columnspan=2, rowspan=2)
 clear_btn = tk.Button(master=frame, text='Clear', command=Clear)
 clear_btn.pack()
 
