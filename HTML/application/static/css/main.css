@@ -183,7 +183,8 @@ body,
 }
 
 .pointer.unsafe {
-  animation: unsafe 3.5s ease-in forwards;;
+  animation: unsafe 3.5s ease-in forwards;
+  ;
 }
 
 .pointer.unsafe.osc {
@@ -254,4 +255,8 @@ body,
   100% {
     rotate: -45deg;
   }
+}
+
+.btn {
+  cursor: pointer;
 }
