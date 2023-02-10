@@ -4,6 +4,7 @@ from . import ai_model, prediction_label
 from datetime import datetime
 from sqlalchemy import desc
 from flask import json, jsonify
+from flask_cors import CORS, cross_origin
 import pandas as pd
 
 main = Blueprint('main', __name__)
@@ -31,6 +32,7 @@ def unsafe():
 
 
 @main.route("/predict", methods=["POST"])
+@cross_origin()
 def predict():
     if request.method == "POST":
         X_test = pd.DataFrame([list(request.json["csvData"].split("\n")[1].split(","))], columns=[list(request.json["csvData"].split("\n")[0].split(","))])

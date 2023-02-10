@@ -13,3 +13,4 @@ requests==2.25.1
 gunicorn==20.1.0
 pandas
 imbalanced-learn
+flask-cors

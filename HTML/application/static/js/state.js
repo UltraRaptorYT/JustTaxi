@@ -86,38 +86,48 @@ map.on("load", () => {
   map["boxZoom"].disable();
 });
 
-navigator.geolocation.watchPosition(function (position) {
-  var lat = position.coords.latitude;
-  var lng = position.coords.longitude;
-  var heading = position.coords.heading;
-  // console.log(position);
-  var speed = position.coords.speed; // Metre per Second
-  data["speed (km/h)"].push(speed * 3.6);
-  var accuracy = position.coords.accuracy;
-  data["accuracy"].push(accuracy);
-  data["bearing"].push(heading);
-  // Update the map's view to center on the user's location
-  map.setCenter([lng, lat]);
+navigator.geolocation.watchPosition(
+  function (position) {
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    var heading = position.coords.heading;
+    // console.log(position);
+    var speed = position.coords.speed; // Metre per Second
+    data["speed (km/h)"].push(speed * 3.6);
+    var accuracy = position.coords.accuracy;
+    data["accuracy"].push(accuracy);
+    data["bearing"].push(heading);
+    // Update the map's view to center on the user's location
+    map.setCenter([lng, lat]);
 
-  // Display the user's location and direction on the map
-  const player = document.createElement("div");
-  player.style.backgroundImage = `url(https://media.discordapp.net/attachments/910885868733087747/1068527441720647840/image-removebg-preview.png)`;
-  player.id = `playerChar`;
-  player.style.minWidth = `10px`;
-  player.style.maxWidth = `50px`;
-  player.style.width = `10vw`;
-  player.style.aspectRatio = `1`;
-  player.style.backgroundSize = `100%`;
-  player.style.zIndex = `99`;
-  if (document.querySelectorAll("#playerChar").length >= 1) {
-    document.querySelectorAll("#playerChar")[0].remove();
+    // Display the user's location and direction on the map
+    const player = document.createElement("div");
+    player.style.backgroundImage = `url(https://media.discordapp.net/attachments/910885868733087747/1068527441720647840/image-removebg-preview.png)`;
+    player.id = `playerChar`;
+    player.style.minWidth = `10px`;
+    player.style.maxWidth = `50px`;
+    player.style.width = `10vw`;
+    player.style.aspectRatio = `1`;
+    player.style.backgroundSize = `100%`;
+    player.style.zIndex = `99`;
+    if (document.querySelectorAll("#playerChar").length >= 1) {
+      document.querySelectorAll("#playerChar")[0].remove();
+    }
+    var marker = new mapboxgl.Marker(player, { anchor: "bottom" })
+      .setLngLat([lng, lat])
+      .addTo(map);
+    marker.setRotation(heading);
+    map.setBearing(heading);
+  },
+  (err) => {
+    console.error(`ERROR(${err.code}): ${err.message}`);
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
   }
-  var marker = new mapboxgl.Marker(player, { anchor: "bottom" })
-    .setLngLat([lng, lat])
-    .addTo(map);
-  marker.setRotation(heading);
-  map.setBearing(heading);
-});
+);
 
 var measureArr = document.querySelectorAll(".measure");
 var size = 0;
@@ -359,13 +369,17 @@ setInterval(() => {
       var unsafeProb = prob[1];
       var finalProb = Math.max(safeProb, unsafeProb);
       if (finalProb == safeProb) {
-        document.getElementById("proba").textContent = (finalProb * 100).toFixed(2);
+        document.getElementById("proba").textContent = (
+          finalProb * 100
+        ).toFixed(2);
         document.querySelector("#container").classList.add("safe");
         document.querySelector("#container").classList.remove("unsafe");
         document.getElementById("pointer").style.rotate =
           finalProb * 100 + "deg";
       } else {
-        document.getElementById("proba").textContent = (-finalProb * 100).toFixed(2);
+        document.getElementById("proba").textContent = (
+          -finalProb * 100
+        ).toFixed(2);
         document.querySelector("#container").classList.remove("safe");
         document.querySelector("#container").classList.add("unsafe");
         document.getElementById("pointer").style.rotate =
