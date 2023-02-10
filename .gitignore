@@ -2,3 +2,4 @@
 JustTaxiAnalytics.csv
 mlruns/*
 GUI/tuned_forest.pkl
+*.zip

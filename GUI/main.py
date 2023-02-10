@@ -7,9 +7,6 @@ import pandas as pd
 from tkinter import filedialog
 from tkinter import Scrollbar
 import numpy as np
-import imblearn
-import sklearn
-import lightgbm
 from datetime import datetime
 from tqdm import tqdm
 
