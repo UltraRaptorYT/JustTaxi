@@ -368,6 +368,8 @@ setInterval(() => {
       var safeProb = prob[0];
       var unsafeProb = prob[1];
       var finalProb = Math.max(safeProb, unsafeProb);
+      document.getElementById("state").textContent =
+        finalProb == safeProb ? "Safe" : "Unsafe";
       if (finalProb == safeProb) {
         document.getElementById("proba").textContent = (
           finalProb * 100
