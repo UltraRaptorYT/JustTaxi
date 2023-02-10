@@ -11,6 +11,7 @@ import imblearn
 import sklearn
 import lightgbm
 from datetime import datetime
+from tqdm import tqdm
 
 with open("tuned_dc.pkl", "rb") as f:
     clf = pkl.load(f)
@@ -61,6 +62,21 @@ def item_selected(event):
             value.set(float(data.iloc[record[0]][key]))
             entry['textvariable'] = value
     callback()
+'''New'''
+def standard_deviation():
+    def standard_deviation_(x):
+        return np.std(x, ddof=0)
+    standard_deviation_.__name__ = 'std'
+    return standard_deviation_
+
+# Custom function to calculate Q1 and Q3
+def percentile(n):
+    def percentile_(x):
+        return np.percentile(x, n)
+    percentile_.__name__ = 'percentile_%s' % n
+    return percentile_
+'''End New'''
+
 
 def UploadAction(event=None):
     filename = filedialog.askopenfilename()
@@ -68,13 +84,25 @@ def UploadAction(event=None):
         global data
         data = pd.read_csv(filename)
         data = data.set_index("bookingID")
-
-
-
-
-
-
-
+        if "acceleration_mean" not in data.columns:
+            data = data.dropna()
+            
+            TDCAG = pd.DataFrame()
+            for col in tqdm(data.columns):
+                if col != "bookingID" and col != "label":
+                    temp = data.groupby("bookingID")[col].agg(["mean", 'max', 'min', standard_deviation(), percentile(25), percentile(75)])
+                    TDCAG[col + "_mean"] = temp["mean"]
+                    TDCAG[col + "_max"] = temp["max"]
+                    TDCAG[col + "_min"] = temp["min"]
+                    TDCAG[col+ "_std"] = temp['std']
+                    TDCAG[col + "_25%"] = temp['percentile_25']
+                    TDCAG[col + "_75%"] = temp['percentile_75']
+                elif col == "label":
+                    temp = data.groupby("bookingID")[col].agg(["max"])
+                    TDCAG[col] = temp['max']
+                    
+            TDCAG.reset_index(inplace=True)
+            return TDCAG
 
         
         # need to check man
