@@ -11,7 +11,6 @@ import imblearn
 import sklearn
 import lightgbm
 from datetime import datetime
-from tkinter.messagebox import showinfo
 
 with open("tuned_dc.pkl", "rb") as f:
     clf = pkl.load(f)
@@ -57,12 +56,11 @@ def item_selected(event):
     for selected_item in table.selection():
         item = table.item(selected_item)
         record = item['values']
-        print(data_input)
-        for key, entry in data_input:
-            print(data.iloc[record[0]][key])
-            print(entry)
-        # show a message
-        showinfo(title='Information', message=','.join(map(str, record)))
+        for key, entry in data_input.items():
+            value = tk.StringVar()
+            value.set(float(data.iloc[record[0]][key]))
+            entry['textvariable'] = value
+    callback()
 
 def UploadAction(event=None):
     filename = filedialog.askopenfilename()
@@ -218,7 +216,7 @@ uploadBtn.pack()
 
 # Probability and Prediction
 frame = tk.Frame(master=window)
-frame.grid(row=2, column=8, columnspan=2, rowspan=3)
+frame.grid(row=2, column=7, columnspan=4, rowspan=3)
 prediction = tk.Label(frame, text=f'Prediction : ')
 result = tk.Label(frame)
 proba = tk.Label(frame, text=f'Probability : ')
@@ -227,8 +225,8 @@ prediction.pack()
 result.pack()
 proba.pack()
 probability.pack()
-result.config(font=("Courier", 28))
-probability.config(font=("Courier", 20))
+result.config(font=tkFont.Font(family="Lucida Grande", size=20))
+probability.config(font=tkFont.Font(family="Lucida Grande", size=20))
 
 # Table
 table_frame = tk.Frame(master=window)
@@ -237,7 +235,7 @@ table_frame.grid(row=9, column=7, columnspan=5, rowspan=10)
 # Export btn
 df = None
 export_frame = tk.Frame(master=window)
-export_frame.grid(row=9, column=8, columnspan=2)
+export_frame.grid(row=10, column=8, columnspan=2)
 
 # Clear btn
 frame = tk.Frame(master=window)
