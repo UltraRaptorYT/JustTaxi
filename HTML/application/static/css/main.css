@@ -109,6 +109,7 @@ body,
   top: 3px;
   clip-path: polygon(9px 10px, 11px 10px, 20px 150px, 10px 190px, 0 150px);
   transform-origin: 10px 145px;
+  transition: all 2.5s;
   transform: translate3d(0, 0, 0);
   /* animation: animate-pointer 5s linear infinite; */
 }

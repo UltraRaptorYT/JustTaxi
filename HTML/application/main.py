@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from . import db, db_columns, prediction_label
-# from . import  ai_model
+# from . import db, db_columns, prediction_label
+from . import ai_model, prediction_label
 from datetime import datetime
 from sqlalchemy import desc
 from flask import json, jsonify
+from flask_cors import CORS, cross_origin
+import pandas as pd
 
 main = Blueprint('main', __name__)
 
@@ -12,11 +14,13 @@ main = Blueprint('main', __name__)
 @main.route('/index')
 @main.route('/home')
 def index():
-    return render_template("index.html", safe=None)
+    return render_template("index.html", safe=None, proba=None)
+
 
 @main.route("/safe")
 def safe():
     return render_template("index.html", safe=True)
+
 
 @main.route("/unsafe")
 def unsafe():
@@ -25,6 +29,16 @@ def unsafe():
 # @main.route('/history')
 # def history():
 #     return render_template('history.html', prediction_label=prediction_label)
+
+
+@main.route("/predict", methods=["POST"])
+@cross_origin()
+def predict():
+    if request.method == "POST":
+        X_test = pd.DataFrame([list(request.json["csvData"].split("\n")[1].split(","))], columns=[list(request.json["csvData"].split("\n")[0].split(","))])
+        X_test.drop(["bookingID"], axis=1, inplace=True)
+        prediction = ai_model.predict_proba(X_test)
+        return str(prediction)
 
 # @main.route('/predict', methods=["GET", "POST"])
 # def predict():
