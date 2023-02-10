@@ -112,8 +112,8 @@ def create_app():
     return app
 
 
-# # AI model file
-# joblib_file = "./application/static/extra_trees_classifier.p"
-# # Load from file
-# with open(joblib_file, 'rb') as f:
-#     ai_model = pickle.load(f)
+# AI model file
+joblib_file = "./application/static/tuned_dc.pkl"
+# Load from file
+with open(joblib_file, 'rb') as f:
+    ai_model = pickle.load(f)

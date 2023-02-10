@@ -90,7 +90,7 @@ navigator.geolocation.watchPosition(function (position) {
   var lat = position.coords.latitude;
   var lng = position.coords.longitude;
   var heading = position.coords.heading;
-  console.log(position);
+  // console.log(position);
   var speed = position.coords.speed; // Metre per Second
   data["speed (km/h)"].push(speed * 3.6);
   var accuracy = position.coords.accuracy;
@@ -253,7 +253,8 @@ setInterval(() => {
 }, 1000);
 
 document.getElementById("saveData").addEventListener("click", () => {
-  tableToCSV();
+  csvData = tableToCSV();
+  downloadCSVFile(csvData);
 });
 
 var pointer = document.getElementById("pointer");
@@ -268,18 +269,26 @@ function uniqueId() {
   }
   return text;
 }
-
+var bookingID = uniqueId();
 function tableToCSV() {
   // Variable to store the final csv data
   var csv_data = [];
   var columnName = ["bookingID"];
-  var dataRow = [uniqueId()];
+  var dataRow = [bookingID];
   for (i of tripInfo) {
     for (var value of agg) {
       columnName.push(`${i}_${value}`);
       dataRow.push(
-        parseFloat(document.getElementById(i).querySelector(`[data-value='${value}']`)
-          .textContent)
+        document
+          .getElementById(i)
+          .querySelector(`[data-value='${value}']`)
+          .textContent.includes("Infinity")
+          ? 0
+          : parseFloat(
+              document
+                .getElementById(i)
+                .querySelector(`[data-value='${value}']`).textContent
+            )
       );
     }
   }
@@ -287,9 +296,8 @@ function tableToCSV() {
   csv_data.push(dataRow.join(","));
 
   csv_data = csv_data.join("\n");
-
-  console.log(csv_data);
-  downloadCSVFile(csv_data);
+  // console.log(csv_data);
+  return csv_data;
 }
 
 function downloadCSVFile(csv_data) {
@@ -341,10 +349,28 @@ mapContainer.addEventListener("click", () => {
   }
 });
 
-// setInterval(() => {
-//   var st = window.getComputedStyle(pointer, null);
-//   var rotate = st.getPropertyValue("rotate");
-//   console.log(rotate);
-//   document.getElementById("proba").textContent =
-//     rotate == "none" ? 0 : parseFloat(rotate.split("deg")[0]).toFixed(1);
-// }, 500);
+setInterval(() => {
+  axios
+    .post("./predict", { csvData: tableToCSV() })
+    .then((result) => {
+      var prob = result.data.replace("[[", "").replace("]]", "");
+      prob = prob.split(" ");
+      var safeProb = prob[0];
+      var unsafeProb = prob[1];
+      var finalProb = Math.max(safeProb, unsafeProb);
+      if (finalProb == safeProb) {
+        document.getElementById("proba").textContent = finalProb * 100;
+        document.querySelector("#container").classList.add("safe");
+        document.querySelector("#container").classList.remove("unsafe");
+        document.getElementById("pointer").style.rotate =
+          finalProb * 100 + "deg";
+      } else {
+        document.getElementById("proba").textContent = -finalProb * 100;
+        document.querySelector("#container").classList.remove("safe");
+        document.querySelector("#container").classList.add("unsafe");
+        document.getElementById("pointer").style.rotate =
+          -(finalProb * 100) + "deg";
+      }
+    })
+    .catch(() => {});
+}, 500);
