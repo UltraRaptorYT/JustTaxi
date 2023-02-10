@@ -359,13 +359,13 @@ setInterval(() => {
       var unsafeProb = prob[1];
       var finalProb = Math.max(safeProb, unsafeProb);
       if (finalProb == safeProb) {
-        document.getElementById("proba").textContent = finalProb * 100;
+        document.getElementById("proba").textContent = (finalProb * 100).toFixed(2);
         document.querySelector("#container").classList.add("safe");
         document.querySelector("#container").classList.remove("unsafe");
         document.getElementById("pointer").style.rotate =
           finalProb * 100 + "deg";
       } else {
-        document.getElementById("proba").textContent = -finalProb * 100;
+        document.getElementById("proba").textContent = (-finalProb * 100).toFixed(2);
         document.querySelector("#container").classList.remove("safe");
         document.querySelector("#container").classList.add("unsafe");
         document.getElementById("pointer").style.rotate =
