@@ -11,8 +11,9 @@ import imblearn
 import sklearn
 import lightgbm
 from datetime import datetime
+from tkinter.messagebox import showinfo
 
-with open("tuned_knn.pkl", "rb") as f:
+with open("tuned_dc.pkl", "rb") as f:
     clf = pkl.load(f)
 
 
@@ -31,7 +32,7 @@ def validate_data_input(x):
 
 def callback():
     X = [data_input["%s" % features[0]].get()]
-    for i in range(39):
+    for i in range(len(features) - 1):
         X += [data_input["%s" % features[i+1]].get()]
     X = pd.DataFrame([X], columns=features)
     y_pred = clf.predict(X)
@@ -47,13 +48,29 @@ def callback():
     prob = np.max(clf.predict_proba(X), axis=1)
     probability['text'] = "{:.2%}".format(prob[0])
 
+table = None
+data = None
+
+def item_selected(event):
+    global table
+    global data
+    for selected_item in table.selection():
+        item = table.item(selected_item)
+        record = item['values']
+        print(data_input)
+        for key, entry in data_input:
+            print(data.iloc[record[0]][key])
+            print(entry)
+        # show a message
+        showinfo(title='Information', message=','.join(map(str, record)))
 
 def UploadAction(event=None):
     filename = filedialog.askopenfilename()
     if filename.endswith('.csv'):
+        global data
         data = pd.read_csv(filename)
-        data = data.set_index("BookingID")
-        
+        data = data.set_index("bookingID")
+
 
 
 
@@ -65,19 +82,21 @@ def UploadAction(event=None):
         # need to check man
         y_pred = clf.predict(data)
         scroll = Scrollbar(table_frame)
-        scroll.pack(side='right', fill='y')
+        scroll.pack(side='right', fill='y')        
+        global table
         table = ttk.Treeview(table_frame, yscrollcommand=scroll.set)
+        table.bind('<<TreeviewSelect>>', item_selected)
         table.pack()
         scroll.config(command=table.yview)
-        table['columns'] = ('BookingID', 'Label')
+        table['columns'] = ('bookingID', 'Label')
         # format our column
         table.column("#0", width=0,  stretch='no')
-        table.column("BookingID", anchor='center', width=120)
-        table.column("Label", anchor='center', width=120)
+        table.column("bookingID", anchor='center', width=50)
+        table.column("Label", anchor='center', width=50)
 
         # Create Headings
         table.heading("#0", text="", anchor='center')
-        table.heading("BookingID", text="BookingID", anchor='center')
+        table.heading("bookingID", text="bookingID", anchor='center')
         table.heading("Label", text="Driving Behaviour", anchor='center')
 
         # Insert data
@@ -93,9 +112,9 @@ def UploadAction(event=None):
                          values=(data.index.values[i], label))
             bid.append(data.index.values[i])
             pred_labels.append(label)
-        data_dict = {'BookingID': bid, 'Label': pred_labels}
+        data_dict = {'bookingID': bid, 'Label': pred_labels}
         global df
-        df = pd.DataFrame(data_dict, columns=['BookingID', 'Label'])
+        df = pd.DataFrame(data_dict, columns=['bookingID', 'Label'])
         dl_btn = tk.Button(
             master=export_frame, text='Export result', command=Download)
         dl_btn.pack()
@@ -213,12 +232,12 @@ probability.config(font=("Courier", 20))
 
 # Table
 table_frame = tk.Frame(master=window)
-table_frame.grid(row=10, column=8, columnspan=2, rowspan=10)
+table_frame.grid(row=9, column=7, columnspan=5, rowspan=10)
 
 # Export btn
 df = None
 export_frame = tk.Frame(master=window)
-export_frame.grid(row=20, column=8, columnspan=2)
+export_frame.grid(row=9, column=8, columnspan=2)
 
 # Clear btn
 frame = tk.Frame(master=window)
