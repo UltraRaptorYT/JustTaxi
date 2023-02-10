@@ -351,7 +351,7 @@ mapContainer.addEventListener("click", () => {
 
 setInterval(() => {
   axios
-    .post("./predict", { csvData: tableToCSV() })
+    .post("https://justtaxi.onrender.com/predict", { csvData: tableToCSV() })
     .then((result) => {
       var prob = result.data.replace("[[", "").replace("]]", "");
       prob = prob.split(" ");
