@@ -37,6 +37,7 @@ def predict():
     if request.method == "POST":
         X_test = pd.DataFrame([list(request.json["csvData"].split("\n")[1].split(","))], columns=[list(request.json["csvData"].split("\n")[0].split(","))])
         X_test.drop(["booking_id"], axis=1, inplace=True)
+        # print(X_test)
         prediction = ai_model.predict_proba(X_test)
         return str(prediction)
 
