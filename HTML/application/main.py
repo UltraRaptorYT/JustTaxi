@@ -35,9 +35,7 @@ def predict():
     if request.method == "POST":
         X_test = pd.DataFrame([list(request.json["csvData"].split("\n")[1].split(","))], columns=[list(request.json["csvData"].split("\n")[0].split(","))])
         X_test.drop(["bookingID"], axis=1, inplace=True)
-        print(X_test)
         prediction = ai_model.predict_proba(X_test)
-        print(prediction)
         return str(prediction)
 
 # @main.route('/predict', methods=["GET", "POST"])
